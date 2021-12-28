@@ -1,6 +1,6 @@
-#include "kalman.h"
+#include "Kalman.h"
 
-kalman::kalman() {
+Kalman::Kalman() {
     
     //Variables to tune
     Q_angle = 0.001f;
