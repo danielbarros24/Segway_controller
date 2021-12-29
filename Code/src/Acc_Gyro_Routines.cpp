@@ -46,11 +46,11 @@ void calibrateSensors() {
 }
 
 double getAccXAngle() {
-  return ((double)(asin((analogRead(acc_xpin) - initValues[0])/(ACC_SENSIVITY))*(180/M_PI)));
+  return ((double)(asin((analogRead(acc_xpin) - initValues[0])*1000/(ACC_SENSIVITY)))*(180/M_PI));
 }
 
 double getAccYAngle() {
-  return ((double)(asin((analogRead(acc_ypin) - initValues[1])/(ACC_SENSIVITY))*(180/M_PI)));
+  return ((double)(asin((analogRead(acc_ypin) - initValues[1])*1000/(ACC_SENSIVITY)))*(180/M_PI));
 }
 
 double getGyroXRate() {
