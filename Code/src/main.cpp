@@ -1,48 +1,44 @@
 #include <Arduino.h>
 #include "Kalman.h"
+#include "Acc_Gyro_Routines.h"
 
 
-/* Acc & Gyro constants */
-const int groundpin = 18;             // analog input pin 4 -- ground
-const int powerpin = 19;              // analog input pin 5 -- voltage
+Kalman kalmanX; // Create the Kalman instances
+Kalman kalmanY;
 
-const int acc_xpin = A4;              // x-axis accelerometer output
-const int acc_ypin = A3;              // y-axis accelerometer output
+double roll, pitch;
+double rate_x, rate_y;
 
-const int gyro_xpin = A2;             // x-axis gyroscope output
-const int gyro_ypin = A1;             // y-axis gyroscope output
-
-int acc_x = 0;                        //Variable to store xpin value
-int acc_y = 0;                        //Variable to store ypin value
-
-int gyro_x = 0;                       //Variable to store xpin value
-int gyro_y = 0;                       //Variable to store ypin value
-
+double kalAngleX, kalAngleY; 
+uint32_t timer;
 
 void setup() {
 
   Serial.begin(9600);
+
+
   /* Code section related to Gyro & Acc and Kalman filter */
-
   /* Acc & Gyro*/
-  pinMode(groundpin, OUTPUT);
-  pinMode(powerpin, OUTPUT);
+  init_pins();
+  calibrateSensors(); 
 
-  digitalWrite(groundpin, LOW);
-  digitalWrite(powerpin, HIGH);
+  kalmanX.setAngle(roll); // Perceber que valores atribuir inicialmente
+  kalmanY.setAngle(pitch);
 
+  timer = micros();
 }
 
 void loop() {
 
   /* Code section related to Gyro & Acc and Kalman filter */
 
-  /* Acc */
-  acc_x = analogRead(acc_xpin);
-  acc_y = analogRead(acc_ypin);
+  /* Get Acc & Gyro values */
+  pitch = getAccXAngle();
+  roll = getAccYAngle();
+  rate_x = getGyroXRate();
+  rate_y = getGyroYRate();
 
-  /* Gyro */
-  gyro_x = analogRead(gyro_xpin);
-  gyro_y = analogRead(gyro_ypin);
-
+  kalAngleX = kalmanX.getAngle(pitch, rate_x, (double)(micros() - timer) / 1000000);
+  kalAngleY = kalmanY.getAngle(roll, rate_y, (double)(micros() - timer) / 1000000);
+  timer = micros();
 }
