@@ -1,44 +1,44 @@
 #include <Arduino.h>
+
+#include "Accelerometer.h"
+#include "Gyroscope.h"
+
 #include "Kalman.h"
-#include "Acc_Gyro_Routines.h"
 
 
-Kalman kalmanX; // Create the Kalman instances
-Kalman kalmanY;
+Kalman kalmanX(0.001f, 0.003f, 0.03f); // Create the Kalman instances
+Kalman kalmanY(0.001f, 0.003f, 0.03f);
 
-double roll, pitch;
-double rate_x, rate_y;
+Accelerometer accX(A5, 312);
+Accelerometer accY(A4, 312);
 
-double kalAngleX, kalAngleY; 
-uint32_t timer;
+Gyroscope gyroX(A3, 2);
+Gyroscope gyroY(A2, 2);
+
+unsigned long timer;
 
 void setup() {
+  Serial.begin(115200);
 
-  Serial.begin(9600);
+  accX.setup();
+  accY.setup();
 
-
-  /* Code section related to Gyro & Acc and Kalman filter */
-  /* Acc & Gyro*/
-  init_pins();
-  calibrateSensors(); 
-
-  kalmanX.setAngle(roll); // Perceber que valores atribuir inicialmente
-  kalmanY.setAngle(pitch);
+  gyroX.setup();
+  gyroY.setup();
 
   timer = micros();
 }
 
 void loop() {
-
-  /* Code section related to Gyro & Acc and Kalman filter */
-
   /* Get Acc & Gyro values */
-  pitch = getAccXAngle();
-  roll = getAccYAngle();
-  rate_x = getGyroXRate();
-  rate_y = getGyroYRate();
+  float pitch = accX.getAngle();
+  float roll = accY.getAngle();
+  float rate_x = gyroX.getAngleRate();
+  float rate_y = gyroY.getAngleRate();
 
-  kalAngleX = kalmanX.getAngle(pitch, rate_x, (double)(micros() - timer) / 1000000);
-  kalAngleY = kalmanY.getAngle(roll, rate_y, (double)(micros() - timer) / 1000000);
+  float dt = (micros() - timer) / 1000000.0f;
+  float kalAngleX = kalmanX.getAngle(pitch, rate_x, dt);
+  float kalAngleY = kalmanY.getAngle(roll, rate_y, dt);
+
   timer = micros();
 }
