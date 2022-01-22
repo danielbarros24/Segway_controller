@@ -1,6 +1,8 @@
 #include <Arduino.h>
 #include "Gyroscope.h"
 
+#include "Config.h"
+
 Gyroscope::Gyroscope(uint8_t pin, float sensitivity)
 {
   this->pin = pin;
@@ -18,6 +20,6 @@ void Gyroscope::setup() {
 float Gyroscope::getAngleRate()
 {
   int read = analogRead(this->pin);
-  int voltage = read * 5000 / 1023;
+  int voltage = read * AREF / 1023;
   return voltage / this->sensitivity;
 }

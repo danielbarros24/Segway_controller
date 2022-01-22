@@ -3,12 +3,12 @@ clc;
 
 %% Motor
 
-J = 0.0632;
-b = 0.7897;
-K = 0.678;
-R = 1;
-r = 0.3556;
-L = 5e-3;
+J = 0.0632;     % moment of inertia of the rotor (kg.m^2)
+b = 0.7897;     % motor viscous friction constant (N.m.s)
+K = 0.678;      % electromotive force constant  and motor torque constant 
+R = 1;          % electric resistance (Ohm)
+L = 5e-3;       % electric inductance (H)
+r = 0.3556;     % wheel radius
 
 A = [-b/J   K/J
     -K/L   -R/L];
@@ -25,12 +25,12 @@ motor_ss = ss(A,B,C,D,'statename',states,'inputname',inputs,'outputname',outputs
 
 %% Inverted pendulum
 
-M = 0.4;
-m = 0.5;
-b = 0.1;
-I = 0.1350;
-g = 9.8;
-l = 0.6;
+M = 0.4;        % Mass of the cart (kg)
+m = 0.5;        % Mass of the pendulum (kg)
+b = 0.1;        % coefficient of friction for cart (N/m/sec)
+I = 0.1350;     % mass moment of inertia of the pendulum (kg.m^2)
+g = 9.8;        % gravity
+l = 0.6;        % length to pendulum center of mass (m)
 
 p = I*(M+m)+M*m*l^2; %denominator for the A and B matrices
 

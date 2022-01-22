@@ -4,6 +4,7 @@
 #include "Gyroscope.h"
 
 #include "Kalman.h"
+#include "Motor.h"
 
 #include "PID.h"
 
@@ -11,18 +12,23 @@
 Kalman kalmanX(0.001f, 0.003f, 0.03f); // Create the Kalman instances
 Kalman kalmanY(0.001f, 0.003f, 0.03f);
 
-Accelerometer accX(A5, 312);
-Accelerometer accY(A4, 312);
+Accelerometer accX(PIN_PA3, 174);
+Accelerometer accY(PIN_PA2, 174);
 
-Gyroscope gyroX(A3, 2);
-Gyroscope gyroY(A2, 2);
+Gyroscope gyroX(PIN_PA4, 15);
+Gyroscope gyroY(PIN_PA5, 15);
 
-PID pid(100, 100, 100, -1, 1);
+PID pid(270, 1010, 18, -1, 1);
+
+Motor motorLeft(PIN_PD4, PIN_PD7);
+Motor motorRight(PIN_PD5, PIN_PD6);
 
 unsigned long timer;
 
 void setup() {
   Serial.begin(115200);
+
+  analogReference(EXTERNAL);
 
   accX.setup();
   accY.setup();
@@ -32,7 +38,12 @@ void setup() {
 
   pid.setup();
 
+  motorLeft.setup();
+  motorRight.setup();
+
   timer = micros();
+
+  pinMode(PIN_PA6, INPUT);
 }
 
 void loop() {
@@ -51,6 +62,31 @@ void loop() {
 
   float error = 0 - kalAngleY;
   float output = pid.update(error, dt);
+
+  float steering = max(analogRead(PIN_PA6) / 1023.0 - 0.1, 0);
+  
+  motorLeft.setDirection(CLOCKWISE);
+  motorRight.setDirection(COUNTER_CLOCKWISE);
+  
+  motorLeft.setSpeed(1 - min(steering, 0.3));
+  motorRight.setSpeed(1 - min(steering, 0.3));
+
+  //
+  if (output > 0) {
+    // motorLeft.setDirection(CLOCKWISE);
+    // motorRight.setDirection(CLOCKWISE);
+
+    // steering [0, 1];
+    /*float steering = 0.0f;
+    
+    motorLeft.setSpeed(output * (1 - steering));
+    motorRight.setSpeed(output * steering);*/
+  } else {
+    // motorLeft.setDirection(COUNTER_CLOCKWISE);
+    // motorRight.setDirection(COUNTER_CLOCKWISE);
+
+    // set speed
+  }
 
   timer = micros();
 }
