@@ -1,0 +1,32 @@
+@startuml
+
+skinparam linetype ortho
+skinparam Monochrome true
+
+Start
+
+:Setup;
+:Inicialização dos pinos;
+:Inicialização das variáveis;
+:Inicialização do timer;
+repeat
+:Obter ângulos do acelerometro;
+
+:Obter velocidade angular do giroscópio;
+
+:Calcular saída do filtro de Kalman;
+
+:Obter erro a partir da estimativa do filtro;
+
+:Calcular saída do PID através do erro;
+
+:Calcular movimento de cada roda a partir do potênciometro do volante;
+
+:Definir direção velocidade para cada motor;
+
+
+repeat while (a cada 10 ms)
+
+
+
+@enduml
