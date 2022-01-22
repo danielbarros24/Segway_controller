@@ -1,0 +1,63 @@
+@startuml
+skinparam linetype ortho
+skinparam Monochrome true
+
+class Main {
+
+}
+
+class Accelerometer {
+    int pin
+    float sensitivity
+
+    float getAngle()
+}
+
+class Gyroscope {
+    int pin
+    float sensitivity
+
+    float getAngleRate()
+}
+
+class Kalman {
+    float Q_angle
+    float Q_bias
+    float R_measure
+
+    float getAngle(newAngle, newRate, dt)
+}
+
+class PID {
+    float Kp
+    float Ki
+    float Kd
+    float output_limit_l
+    float output_limit_h
+
+    float update(new_error, dt)
+}
+
+enum MotorDirection {
+    CLOCKWISE
+    COUNTER_CLOCKWISE
+}
+
+class Motor {
+    int pinSpeed
+    int pinDir
+
+    float setDirection(direction)
+    float setSpeed(pwm)
+}
+
+Motor -- MotorDirection
+
+
+Main -- "1" PID
+Main -- "2" Accelerometer
+Main -- "2" Gyroscope
+Main -- "2" Motor
+Main -- "2" Kalman
+
+@enduml
